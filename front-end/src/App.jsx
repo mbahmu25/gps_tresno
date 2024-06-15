@@ -2,34 +2,35 @@ import { useState,useEffect } from 'react'
 import { io } from "socket.io-client";
 import './App.css'
 import { MapContainer, TileLayer, Circle} from "react-leaflet";
+import { data } from 'autoprefixer';
+
 function App() {
   const [dataGPS, setGPS] = useState("");
+  
   useEffect(() => {
-    const socket = io("http://localhost:3000/", {
+    const socket = io("http://localhost:3000/",{
       transports: ["websocket"],
     });
-    socket.on("connect", () => {
-      console.log("Nyambung ngab");
+    socket.connect()
+    socket.on("message", newData => {
+      // console.log(newData)
+      setGPS(newData)
     });
-    socket.on("connect_error", (err) => {
-      console.log(`connect_error due to ${err.message}`);
-    });
-    socket.on("message", (newData) => {
-      console.log(newData);
-      setGPS(newData);
-    });
-    return () => socket.emit("end");
-  }, [dataGPS]);
+    return () => {
+      socket.close();
+    }
+  },[dataGPS]);
+  console.log(dataGPS)
   return (
     <>
-      {/* <div className='bg-red-500'>Tes</div> */}
-      <MapContainer zoom={10} center={[-7.50659968761,110.191582677]} scrollWheelZoom={true}>
+      <div className="text-3xl font-bold underline">{dataGPS}</div>
+      <MapContainer zoom={20} center={[-7.7699468,110.3769087]} scrollWheelZoom={true}>
         <TileLayer
           attribution=''
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <Circle
-          center={dataGPS.length > 0 ?([parseFloat(dataGPS[1]), parseFloat(dataGPS[2])]):([0,0])}
+          center={dataGPS.length > 0 ?([parseFloat(dataGPS.split(',')[1]), parseFloat(dataGPS.split(',')[2])]):([0,0])}
           radius={10}
           fillColor="red"
           color="red"
