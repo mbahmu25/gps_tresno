@@ -21,9 +21,10 @@ void loop() {
   if (timePrev - time >= 1) {
     timePrev = time;
 
-    probe = String(random(1,5));
+    probe = String(random(1,6));
     probe += "," + String(-getRandom(7.7701,7.7751));
     probe += "," + String(getRandom(110.3721,110.3771));
+    probe += "," + String(20+random(1,20)/10);
     probe += "\r";
 
     // printing with error
